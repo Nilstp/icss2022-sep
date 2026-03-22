@@ -1,4 +1,6 @@
-package nl.han.ica.icss.parser;// Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
+// Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
+package nl.han.ica.icss.parser;
+
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -15,4 +17,52 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStylesheet(ICSSParser.StylesheetContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#stylerule}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStylerule(ICSSParser.StyleruleContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#selector}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelector(ICSSParser.SelectorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#tagSelector}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagSelector(ICSSParser.TagSelectorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#classSelector}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClassSelector(ICSSParser.ClassSelectorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#idSelector}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdSelector(ICSSParser.IdSelectorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclaration(ICSSParser.DeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#property}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProperty(ICSSParser.PropertyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLiteral(ICSSParser.LiteralContext ctx);
 }
