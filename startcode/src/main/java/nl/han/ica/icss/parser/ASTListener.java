@@ -54,4 +54,70 @@ public class ASTListener extends ICSSBaseListener {
 		Stylerule stylerule = (Stylerule) currentContainer.pop();
 		currentContainer.peek().addChild(stylerule);
 	}
+
+	@Override
+	public void enterTagSelector(ICSSParser.TagSelectorContext ctx) {
+		currentContainer.push(new TagSelector(ctx.getText()));
+	}
+
+	@Override
+	public void exitTagSelector(ICSSParser.TagSelectorContext ctx) {
+		TagSelector selector = (TagSelector) currentContainer.pop();
+		currentContainer.peek().addChild(selector);
+	}
+
+	@Override
+	public void enterClassSelector(ICSSParser.ClassSelectorContext ctx) {
+		currentContainer.push(new ClassSelector(ctx.getText()));
+	}
+
+	@Override
+	public void exitClassSelector(ICSSParser.ClassSelectorContext ctx) {
+		ClassSelector selector = (ClassSelector) currentContainer.pop();
+		currentContainer.peek().addChild(selector);
+	}
+
+	@Override
+	public void enterIdSelector(ICSSParser.IdSelectorContext ctx) {
+		currentContainer.push(new IdSelector(ctx.getText()));
+	}
+
+	@Override
+	public void exitIdSelector(ICSSParser.IdSelectorContext ctx) {
+		IdSelector selector = (IdSelector) currentContainer.pop();
+		currentContainer.peek().addChild(selector);
+	}
+
+	@Override
+	public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
+		String property = ctx.property().getText();
+		currentContainer.push(new Declaration(property));
+	}
+
+	@Override
+	public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
+		Declaration declaration = (Declaration) currentContainer.pop();
+		currentContainer.peek().addChild(declaration);
+	}
+
+	@Override
+	public void enterLiteral(ICSSParser.LiteralContext ctx) {
+		String text = ctx.getText();
+
+		if (text.matches("#[0-9a-fA-F]{6}")) {
+			currentContainer.push(new ColorLiteral(text));
+		} else if (text.endsWith("px")) {
+			int value = Integer.parseInt(text.replace("px", ""));
+			currentContainer.push(new PixelLiteral(value));
+		} else if (text.endsWith("%")) {
+			int value = Integer.parseInt(text.replace("%", ""));
+			currentContainer.push(new PercentageLiteral(value));
+		}
+	}
+
+	@Override
+	public void exitLiteral(ICSSParser.LiteralContext ctx) {
+		ASTNode literal = currentContainer.pop();
+		currentContainer.peek().addChild(literal);
+	}
 }
