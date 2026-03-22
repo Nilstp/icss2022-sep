@@ -120,6 +120,30 @@ public class ICSSBaseListener implements ICSSListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLiteral(ICSSParser.LiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression(ICSSParser.ExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression(ICSSParser.ExpressionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

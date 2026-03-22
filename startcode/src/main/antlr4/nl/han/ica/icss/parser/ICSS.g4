@@ -46,9 +46,9 @@ ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
 
-stylesheet: stylerule* EOF;
+stylesheet: (variableAssignment | stylerule)* EOF;
 
-stylerule: selector OPEN_BRACE declaration* CLOSE_BRACE;
+stylerule: selector OPEN_BRACE (variableAssignment | declaration)* CLOSE_BRACE;
 
 selector: tagSelector
         | classSelector
@@ -66,3 +66,7 @@ literal: COLOR
        | PIXELSIZE
        | PERCENTAGE;
 
+variableAssignment: CAPITAL_IDENT ASSIGNMENT_OPERATOR expression SEMICOLON;
+
+expression: literal
+          | CAPITAL_IDENT;

@@ -1,7 +1,6 @@
 // Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
 package nl.han.ica.icss.parser;
 
-
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -99,4 +98,24 @@ public interface ICSSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLiteral(ICSSParser.LiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ICSSParser#variableAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ICSSParser#variableAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression(ICSSParser.ExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression(ICSSParser.ExpressionContext ctx);
 }
