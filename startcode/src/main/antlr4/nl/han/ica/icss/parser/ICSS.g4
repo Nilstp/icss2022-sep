@@ -48,7 +48,7 @@ ASSIGNMENT_OPERATOR: ':=';
 
 stylesheet: (variableAssignment | stylerule)* EOF;
 
-stylerule: selector OPEN_BRACE (variableAssignment | declaration)* CLOSE_BRACE;
+stylerule: selector OPEN_BRACE (variableAssignment | declaration | ifClause)* CLOSE_BRACE;
 
 selector: tagSelector
         | classSelector
@@ -86,3 +86,9 @@ atom
     : literal
     | variableReference
     | booleanLiteral;
+
+ifClause
+    : IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE
+      OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE
+      (ELSE OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE)?
+    ;
