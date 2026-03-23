@@ -58,7 +58,7 @@ tagSelector: LOWER_IDENT;
 classSelector: CLASS_IDENT;
 idSelector: ID_IDENT;
 
-declaration: property COLON literal SEMICOLON;
+declaration: property COLON expression SEMICOLON;
 
 property: LOWER_IDENT;
 
@@ -66,7 +66,12 @@ literal: COLOR
        | PIXELSIZE
        | PERCENTAGE;
 
-variableAssignment: CAPITAL_IDENT ASSIGNMENT_OPERATOR expression SEMICOLON;
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 
 expression: literal
-          | CAPITAL_IDENT;
+          | variableReference
+          | booleanLiteral;
+
+variableReference: CAPITAL_IDENT;
+
+booleanLiteral: TRUE | FALSE;

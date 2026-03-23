@@ -120,4 +120,38 @@ public class ASTListener extends ICSSBaseListener {
 		ASTNode literal = currentContainer.pop();
 		currentContainer.peek().addChild(literal);
 	}
+
+	@Override
+	public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+		currentContainer.push(new VariableAssignment());
+	}
+
+	@Override
+	public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+		VariableAssignment var = (VariableAssignment) currentContainer.pop();
+		currentContainer.peek().addChild(var);
+	}
+
+	@Override
+	public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
+		currentContainer.push(new VariableReference(ctx.getText()));
+	}
+
+	@Override
+	public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
+		VariableReference ref = (VariableReference) currentContainer.pop();
+		currentContainer.peek().addChild(ref);
+	}
+
+	@Override
+	public void enterBooleanLiteral(ICSSParser.BooleanLiteralContext ctx) {
+		boolean value = ctx.getText().equals("TRUE");
+		currentContainer.push(new BoolLiteral(value));
+	}
+
+	@Override
+	public void exitBooleanLiteral(ICSSParser.BooleanLiteralContext ctx) {
+		BoolLiteral bool = (BoolLiteral) currentContainer.pop();
+		currentContainer.peek().addChild(bool);
+	}
 }

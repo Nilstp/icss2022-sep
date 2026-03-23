@@ -77,4 +77,16 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpression(ICSSParser.ExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#variableReference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableReference(ICSSParser.VariableReferenceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#booleanLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBooleanLiteral(ICSSParser.BooleanLiteralContext ctx);
 }
