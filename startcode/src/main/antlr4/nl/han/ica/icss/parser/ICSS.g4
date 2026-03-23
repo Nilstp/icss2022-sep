@@ -64,14 +64,25 @@ property: LOWER_IDENT;
 
 literal: COLOR
        | PIXELSIZE
-       | PERCENTAGE;
+       | PERCENTAGE
+       | SCALAR;
 
 variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 
-expression: literal
-          | variableReference
-          | booleanLiteral;
+expression
+    : addExpr;
 
 variableReference: CAPITAL_IDENT;
 
 booleanLiteral: TRUE | FALSE;
+
+addExpr: addExpr(PLUS | MIN) mulExpr
+       | mulExpr;
+
+mulExpr: mulExpr MUL atom
+       | atom;
+
+atom
+    : literal
+    | variableReference
+    | booleanLiteral;

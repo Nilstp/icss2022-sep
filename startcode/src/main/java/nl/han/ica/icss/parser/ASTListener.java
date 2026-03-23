@@ -1,5 +1,6 @@
 package nl.han.ica.icss.parser;
 
+import java.util.Objects;
 import java.util.Stack;
 
 
@@ -96,29 +97,35 @@ public class ASTListener extends ICSSBaseListener {
 
 	@Override
 	public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
+		ASTNode expression = currentContainer.pop(); // <-- get expression first
 		Declaration declaration = (Declaration) currentContainer.pop();
+
+		declaration.addChild(expression);
 		currentContainer.peek().addChild(declaration);
 	}
 
 	@Override
-	public void enterLiteral(ICSSParser.LiteralContext ctx) {
+	public void exitLiteral(ICSSParser.LiteralContext ctx) {
 		String text = ctx.getText();
 
+		ASTNode node;
+
 		if (text.matches("#[0-9a-fA-F]{6}")) {
-			currentContainer.push(new ColorLiteral(text));
+			node = new ColorLiteral(text);
 		} else if (text.endsWith("px")) {
 			int value = Integer.parseInt(text.replace("px", ""));
-			currentContainer.push(new PixelLiteral(value));
+			node = new PixelLiteral(value);
 		} else if (text.endsWith("%")) {
 			int value = Integer.parseInt(text.replace("%", ""));
-			currentContainer.push(new PercentageLiteral(value));
+			node = new PercentageLiteral(value);
+		} else if (text.matches("[0-9]+")) {
+			int value = Integer.parseInt(text);
+			node = new ScalarLiteral(value);
+		} else {
+			throw new RuntimeException("Unknown literal: " + text);
 		}
-	}
 
-	@Override
-	public void exitLiteral(ICSSParser.LiteralContext ctx) {
-		ASTNode literal = currentContainer.pop();
-		currentContainer.peek().addChild(literal);
+		currentContainer.push(node);
 	}
 
 	@Override
@@ -128,30 +135,70 @@ public class ASTListener extends ICSSBaseListener {
 
 	@Override
 	public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+		ASTNode expression = currentContainer.pop();
+		VariableReference varRef = (VariableReference) currentContainer.pop();
+
 		VariableAssignment var = (VariableAssignment) currentContainer.pop();
+		var.addChild(varRef);
+		var.addChild(expression);
+
 		currentContainer.peek().addChild(var);
 	}
 
 	@Override
-	public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
-		currentContainer.push(new VariableReference(ctx.getText()));
-	}
-
-	@Override
 	public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
-		VariableReference ref = (VariableReference) currentContainer.pop();
-		currentContainer.peek().addChild(ref);
+		VariableReference ref = new VariableReference(ctx.getText());
+		currentContainer.push(ref);
 	}
 
 	@Override
-	public void enterBooleanLiteral(ICSSParser.BooleanLiteralContext ctx) {
+	public void exitBooleanLiteral(ICSSParser.BooleanLiteralContext ctx) {
 		boolean value = ctx.getText().equals("TRUE");
 		currentContainer.push(new BoolLiteral(value));
 	}
 
 	@Override
-	public void exitBooleanLiteral(ICSSParser.BooleanLiteralContext ctx) {
-		BoolLiteral bool = (BoolLiteral) currentContainer.pop();
-		currentContainer.peek().addChild(bool);
+	public void exitAddExpr(ICSSParser.AddExprContext ctx) {
+		if (ctx.getChildCount() == 3) {
+			ASTNode right = currentContainer.pop();
+			ASTNode left = currentContainer.pop();
+
+			Operation op;
+			if (ctx.PLUS() != null) {
+				op = new AddOperation();
+			} else {
+				op = new SubtractOperation();
+			}
+
+			op.addChild(left);
+			op.addChild(right);
+
+			currentContainer.push(op);
+		}
+	}
+
+	@Override
+	public void exitMulExpr(ICSSParser.MulExprContext ctx) {
+		if (ctx.getChildCount() == 3) {
+			ASTNode right = currentContainer.pop();
+			ASTNode left = currentContainer.pop();
+
+			MultiplyOperation op = new MultiplyOperation();
+			op.addChild(left);
+			op.addChild(right);
+
+			currentContainer.push(op);
+		}
+	}
+
+	@Override
+	public void exitAtom(ICSSParser.AtomContext ctx) {
+		if (ctx.literal() != null) {
+			// Already handled below
+		} else if (ctx.variableReference() != null) {
+			// Already handled below
+		} else if (ctx.booleanLiteral() != null) {
+			// Already handled below
+		}
 	}
 }
