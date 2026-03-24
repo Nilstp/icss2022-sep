@@ -1,4 +1,4 @@
-// Generated from C:/Users/nilst/OneDrive/Documenten/GitHub/icss2022-sep/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
+// Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
 package nl.han.ica.icss.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -17,11 +17,23 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStylesheet(ICSSParser.StylesheetContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ICSSParser#stylerule}.
+	 * Visit a parse tree produced by {@link ICSSParser#variable}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStylerule(ICSSParser.StyleruleContext ctx);
+	T visitVariable(ICSSParser.VariableContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#ruleset}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRuleset(ICSSParser.RulesetContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#body}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBody(ICSSParser.BodyContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ICSSParser#selector}.
 	 * @param ctx the parse tree
@@ -29,83 +41,17 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSelector(ICSSParser.SelectorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ICSSParser#tagSelector}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTagSelector(ICSSParser.TagSelectorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#classSelector}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitClassSelector(ICSSParser.ClassSelectorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#idSelector}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIdSelector(ICSSParser.IdSelectorContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ICSSParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitDeclaration(ICSSParser.DeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ICSSParser#property}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProperty(ICSSParser.PropertyContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#literal}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLiteral(ICSSParser.LiteralContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#variableAssignment}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariableAssignment(ICSSParser.VariableAssignmentContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ICSSParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExpression(ICSSParser.ExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#variableReference}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariableReference(ICSSParser.VariableReferenceContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#booleanLiteral}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBooleanLiteral(ICSSParser.BooleanLiteralContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#addExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddExpr(ICSSParser.AddExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#mulExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMulExpr(ICSSParser.MulExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ICSSParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAtom(ICSSParser.AtomContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ICSSParser#ifClause}.
 	 * @param ctx the parse tree

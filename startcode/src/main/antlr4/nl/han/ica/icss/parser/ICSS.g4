@@ -8,14 +8,12 @@ ELSE: 'else';
 BOX_BRACKET_OPEN: '[';
 BOX_BRACKET_CLOSE: ']';
 
-
 //Literals
 TRUE: 'TRUE';
 FALSE: 'FALSE';
 PIXELSIZE: [0-9]+ 'px';
 PERCENTAGE: [0-9]+ '%';
 SCALAR: [0-9]+;
-
 
 //Color value takes precedence over id idents
 COLOR: '#' [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f];
@@ -31,7 +29,6 @@ CAPITAL_IDENT: [A-Z] [A-Za-z0-9_]*;
 //All whitespace is skipped
 WS: [ \t\r\n]+ -> skip;
 
-//
 OPEN_BRACE: '{';
 CLOSE_BRACE: '}';
 SEMICOLON: ';';
@@ -41,56 +38,40 @@ MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
-
-
-
 //--- PARSER: ---
 
-stylesheet: (variableAssignment | stylerule)* EOF;
+stylesheet: (variable | ruleset)* EOF;
 
-stylerule: selector OPEN_BRACE (variableAssignment | declaration | ifClause)* CLOSE_BRACE;
+variable: CAPITAL_IDENT ASSIGNMENT_OPERATOR expression SEMICOLON;
 
-selector: tagSelector
-        | classSelector
-        | idSelector;
+ruleset: selector OPEN_BRACE body CLOSE_BRACE;
 
-tagSelector: LOWER_IDENT;
-classSelector: CLASS_IDENT;
-idSelector: ID_IDENT;
+body: (declaration | ifClause)*;
 
-declaration: property COLON expression SEMICOLON;
+selector
+    : LOWER_IDENT
+    | ID_IDENT
+    | CLASS_IDENT;
 
-property: LOWER_IDENT;
-
-literal: COLOR
-       | PIXELSIZE
-       | PERCENTAGE
-       | SCALAR;
-
-variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+declaration: LOWER_IDENT COLON expression SEMICOLON;
 
 expression
-    : addExpr;
-
-variableReference: CAPITAL_IDENT;
-
-booleanLiteral: TRUE | FALSE;
-
-addExpr: addExpr(PLUS | MIN) mulExpr
-       | mulExpr;
-
-mulExpr: mulExpr MUL atom
-       | atom;
-
-atom
-    : literal
-    | variableReference
-    | booleanLiteral;
+    : expression MUL expression
+    |expression PLUS expression
+    | expression MIN expression
+    | CAPITAL_IDENT
+    | COLOR
+    | PIXELSIZE
+    | PERCENTAGE
+    | SCALAR
+    | TRUE
+    | FALSE
+    ;
 
 ifClause
-    : IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE
-      OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE
+    : IF BOX_BRACKET_OPEN CAPITAL_IDENT BOX_BRACKET_CLOSE
+      OPEN_BRACE body CLOSE_BRACE
       elseClause?
     ;
 
-elseClause: ELSE OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE;
+elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
