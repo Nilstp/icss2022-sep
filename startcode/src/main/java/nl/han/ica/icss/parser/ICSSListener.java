@@ -18,25 +18,25 @@ public interface ICSSListener extends ParseTreeListener {
 	 */
 	void exitStylesheet(ICSSParser.StylesheetContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ICSSParser#variable}.
+	 * Enter a parse tree produced by {@link ICSSParser#assignment}.
 	 * @param ctx the parse tree
 	 */
-	void enterVariable(ICSSParser.VariableContext ctx);
+	void enterAssignment(ICSSParser.AssignmentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ICSSParser#variable}.
+	 * Exit a parse tree produced by {@link ICSSParser#assignment}.
 	 * @param ctx the parse tree
 	 */
-	void exitVariable(ICSSParser.VariableContext ctx);
+	void exitAssignment(ICSSParser.AssignmentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ICSSParser#ruleset}.
+	 * Enter a parse tree produced by {@link ICSSParser#stylerule}.
 	 * @param ctx the parse tree
 	 */
-	void enterRuleset(ICSSParser.RulesetContext ctx);
+	void enterStylerule(ICSSParser.StyleruleContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ICSSParser#ruleset}.
+	 * Exit a parse tree produced by {@link ICSSParser#stylerule}.
 	 * @param ctx the parse tree
 	 */
-	void exitRuleset(ICSSParser.RulesetContext ctx);
+	void exitStylerule(ICSSParser.StyleruleContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ICSSParser#body}.
 	 * @param ctx the parse tree
@@ -68,15 +68,41 @@ public interface ICSSListener extends ParseTreeListener {
 	 */
 	void exitDeclaration(ICSSParser.DeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ICSSParser#expression}.
+	 * Enter a parse tree produced by the {@code OperationExpression}
+	 * labeled alternative in {@link ICSSParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpression(ICSSParser.ExpressionContext ctx);
+	void enterOperationExpression(ICSSParser.OperationExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ICSSParser#expression}.
+	 * Exit a parse tree produced by the {@code OperationExpression}
+	 * labeled alternative in {@link ICSSParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpression(ICSSParser.ExpressionContext ctx);
+	void exitOperationExpression(ICSSParser.OperationExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code LiteralExpression}
+	 * labeled alternative in {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLiteralExpression(ICSSParser.LiteralExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code LiteralExpression}
+	 * labeled alternative in {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLiteralExpression(ICSSParser.LiteralExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code VariableExpression}
+	 * labeled alternative in {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableExpression(ICSSParser.VariableExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code VariableExpression}
+	 * labeled alternative in {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableExpression(ICSSParser.VariableExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ICSSParser#ifClause}.
 	 * @param ctx the parse tree
@@ -97,4 +123,24 @@ public interface ICSSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitElseClause(ICSSParser.ElseClauseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ICSSParser#variable}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariable(ICSSParser.VariableContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ICSSParser#variable}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariable(ICSSParser.VariableContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ICSSParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterLiteral(ICSSParser.LiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ICSSParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitLiteral(ICSSParser.LiteralContext ctx);
 }

@@ -4,14 +4,17 @@ import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
-import nl.han.ica.icss.ast.operations.*;
-import nl.han.ica.icss.ast.selectors.*;
-
-import java.util.ArrayList;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
+import nl.han.ica.icss.ast.selectors.ClassSelector;
+import nl.han.ica.icss.ast.selectors.IdSelector;
+import nl.han.ica.icss.ast.selectors.TagSelector;
 
 public class ASTListener extends ICSSBaseListener {
 
 	private AST ast;
+
 	private IHANStack<ASTNode> currentContainer;
 
 	public ASTListener() {
@@ -22,182 +25,150 @@ public class ASTListener extends ICSSBaseListener {
 	public AST getAST() {
 		return ast;
 	}
-	
-// ─── STYLESHEET ───────────────────────────────────────────────────────────
 
 	@Override
 	public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
-		currentContainer.push(new Stylesheet());
-		currentContainer.push(new Sentinel("stylesheet"));
+		Stylesheet stylesheet = new Stylesheet();
+		ast.setRoot(stylesheet);
+		currentContainer.push(stylesheet);
 	}
 
 	@Override
 	public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-		ArrayList<ASTNode> children = new ArrayList<>();
-		while (!(currentContainer.peek() instanceof Sentinel)) {
-			children.add(0, currentContainer.pop());
-		}
-		currentContainer.pop(); // pop sentinel
-		Stylesheet root = (Stylesheet) currentContainer.pop();
-		for (ASTNode child : children) root.addChild(child);
-		ast.setRoot(root);
+		currentContainer.pop();
 	}
 
-// ─── VARIABLE ASSIGNMENT ──────────────────────────────────────────────────
+	@Override
+	public void enterAssignment(ICSSParser.AssignmentContext ctx) {
+		VariableAssignment assignment = new VariableAssignment();
+		currentContainer.peek().addChild(assignment);
+		currentContainer.push(assignment);
+	}
+
+	@Override
+	public void exitAssignment(ICSSParser.AssignmentContext ctx) {
+		currentContainer.pop();
+	}
 
 	@Override
 	public void enterVariable(ICSSParser.VariableContext ctx) {
-		currentContainer.push(new VariableAssignment());
-		currentContainer.push(new VariableReference(ctx.CAPITAL_IDENT().getText()));
+		VariableReference variableReference = new VariableReference(ctx.getText());
+		currentContainer.peek().addChild(variableReference);
 	}
 
 	@Override
-	public void exitVariable(ICSSParser.VariableContext ctx) {
-		ASTNode expression = currentContainer.pop();
-		VariableReference varRef = (VariableReference) currentContainer.pop();
-		VariableAssignment var = (VariableAssignment) currentContainer.pop();
-		var.addChild(varRef);
-		var.addChild(expression);
-		currentContainer.push(var);
+	public void enterOperationExpression(ICSSParser.OperationExpressionContext ctx) {
+		Operation operation;
+		switch (ctx.op.getType()) {
+			case ICSSParser.PLUS:
+				operation = new AddOperation();
+				break;
+			case ICSSParser.MIN:
+				operation = new SubtractOperation();
+				break;
+			case ICSSParser.MUL:
+				operation = new MultiplyOperation();
+				break;
+			default:
+				throw new RuntimeException("Unknown operator: " + ctx.op.getText());
+		}
+		currentContainer.peek().addChild(operation);
+		currentContainer.push(operation);
 	}
 
-// ─── RULESET ──────────────────────────────────────────────────────────────
+	@Override
+	public void exitOperationExpression(ICSSParser.OperationExpressionContext ctx) {
+		currentContainer.pop();
+	}
 
 	@Override
-	public void enterRuleset(ICSSParser.RulesetContext ctx) {
+	public void enterLiteral(ICSSParser.LiteralContext ctx) {
+		Literal literal;
+		switch (ctx.start.getType()) {
+			case ICSSParser.COLOR:
+				literal = new ColorLiteral(ctx.getText());
+				break;
+			case ICSSParser.PIXELSIZE:
+				literal = new PixelLiteral(Integer.parseInt(ctx.getText().replace("px", "")));
+				break;
+			case ICSSParser.PERCENTAGE:
+				literal = new PercentageLiteral(Integer.parseInt(ctx.getText().replace("%", "")));
+				break;
+			case ICSSParser.SCALAR:
+				literal = new ScalarLiteral(Integer.parseInt(ctx.getText()));
+				break;
+			case ICSSParser.TRUE:
+				literal = new BoolLiteral(true);
+				break;
+			case ICSSParser.FALSE:
+				literal = new BoolLiteral(false);
+				break;
+			default:
+				throw new RuntimeException("Unknown literal: " + ctx.getText());
+		}
+		currentContainer.peek().addChild(literal);
+	}
+
+	@Override
+	public void enterStylerule(ICSSParser.StyleruleContext ctx) {
 		Stylerule stylerule = new Stylerule();
-		String selectorText = ctx.selector().getText();
-		if (selectorText.startsWith("#")) {
-			stylerule.addChild(new IdSelector(selectorText));
-		} else if (selectorText.startsWith(".")) {
-			stylerule.addChild(new ClassSelector(selectorText));
-		} else {
-			stylerule.addChild(new TagSelector(selectorText));
-		}
+		currentContainer.peek().addChild(stylerule);
 		currentContainer.push(stylerule);
-		currentContainer.push(new Sentinel("ruleset"));
 	}
 
 	@Override
-	public void exitRuleset(ICSSParser.RulesetContext ctx) {
-		ArrayList<ASTNode> children = new ArrayList<>();
-		while (!(currentContainer.peek() instanceof Sentinel)) {
-			children.add(0, currentContainer.pop());
-		}
-		currentContainer.pop(); // pop sentinel
-		Stylerule stylerule = (Stylerule) currentContainer.pop();
-		for (ASTNode child : children) stylerule.addChild(child);
-		currentContainer.push(stylerule);
+	public void exitStylerule(ICSSParser.StyleruleContext ctx) {
+		currentContainer.pop();
 	}
 
-// ─── DECLARATION ─────────────────────────────────────────────────────────
+	@Override
+	public void enterSelector(ICSSParser.SelectorContext ctx) {
+		Selector selector;
+		if (ctx.ID_IDENT() != null) {
+			selector = new IdSelector(ctx.ID_IDENT().getText());
+		} else if (ctx.CLASS_IDENT() != null) {
+			selector = new ClassSelector(ctx.CLASS_IDENT().getText());
+		} else if (ctx.LOWER_IDENT() != null) {
+			selector = new TagSelector(ctx.LOWER_IDENT().getText());
+		} else {
+			throw new RuntimeException("Unknown selector: " + ctx.getText());
+		}
+		currentContainer.peek().addChild(selector);
+	}
 
 	@Override
 	public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
-		currentContainer.push(new Declaration(ctx.LOWER_IDENT().getText()));
+		Declaration declaration = new Declaration(ctx.prop.getText());
+		currentContainer.peek().addChild(declaration);
+		currentContainer.push(declaration);
 	}
 
 	@Override
 	public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
-		ASTNode expression = currentContainer.pop();
-		Declaration declaration = (Declaration) currentContainer.pop();
-		declaration.addChild(expression);
-		currentContainer.push(declaration);
+		currentContainer.pop();
 	}
-
-// ─── IF CLAUSE ────────────────────────────────────────────────────────────
 
 	@Override
 	public void enterIfClause(ICSSParser.IfClauseContext ctx) {
 		IfClause ifClause = new IfClause();
-		ifClause.addChild(new VariableReference(ctx.CAPITAL_IDENT().getText()));
+		currentContainer.peek().addChild(ifClause);
 		currentContainer.push(ifClause);
-		currentContainer.push(new Sentinel("ifClause"));
 	}
 
 	@Override
 	public void exitIfClause(ICSSParser.IfClauseContext ctx) {
-		ArrayList<ASTNode> children = new ArrayList<>();
-		while (!(currentContainer.peek() instanceof Sentinel)) {
-			children.add(0, currentContainer.pop());
-		}
-		currentContainer.pop(); // pop sentinel
-		IfClause ifClause = (IfClause) currentContainer.pop();
-		for (ASTNode child : children) ifClause.addChild(child);
-		currentContainer.push(ifClause);
+		currentContainer.pop();
 	}
-
-// ─── ELSE CLAUSE ─────────────────────────────────────────────────────────
 
 	@Override
 	public void enterElseClause(ICSSParser.ElseClauseContext ctx) {
-		currentContainer.push(new ElseClause());
-		currentContainer.push(new Sentinel("elseClause"));
+		ElseClause elseClause = new ElseClause();
+		currentContainer.peek().addChild(elseClause);
+		currentContainer.push(elseClause);
 	}
 
 	@Override
 	public void exitElseClause(ICSSParser.ElseClauseContext ctx) {
-		ArrayList<ASTNode> children = new ArrayList<>();
-		while (!(currentContainer.peek() instanceof Sentinel)) {
-			children.add(0, currentContainer.pop());
-		}
-		currentContainer.pop(); // pop sentinel
-		ElseClause elseClause = (ElseClause) currentContainer.pop();
-		for (ASTNode child : children) elseClause.addChild(child);
-		currentContainer.push(elseClause);
-	}
-
-// ─── EXPRESSION ──────────────────────────────────────────────────────────
-
-	@Override
-	public void exitExpression(ICSSParser.ExpressionContext ctx) {
-		if (ctx.getChildCount() == 3 && ctx.expression().size() == 2) {
-			ASTNode right = currentContainer.pop();
-			ASTNode left = currentContainer.pop();
-			Operation op;
-			if (ctx.PLUS() != null) {
-				op = new AddOperation();
-			} else if (ctx.MIN() != null) {
-				op = new SubtractOperation();
-			} else {
-				op = new MultiplyOperation();
-			}
-			op.addChild(left);
-			op.addChild(right);
-			currentContainer.push(op);
-			return;
-		}
-
-		String text = ctx.getText();
-		if (ctx.COLOR() != null) {
-			currentContainer.push(new ColorLiteral(text));
-		} else if (ctx.PIXELSIZE() != null) {
-			currentContainer.push(new PixelLiteral(text));
-		} else if (ctx.PERCENTAGE() != null) {
-			currentContainer.push(new PercentageLiteral(text));
-		} else if (ctx.SCALAR() != null) {
-			currentContainer.push(new ScalarLiteral(Integer.parseInt(text)));
-		} else if (ctx.TRUE() != null) {
-			currentContainer.push(new BoolLiteral(true));
-		} else if (ctx.FALSE() != null) {
-			currentContainer.push(new BoolLiteral(false));
-		} else if (ctx.CAPITAL_IDENT() != null) {
-			currentContainer.push(new VariableReference(text));
-		}
-	}
-
-// ─── SENTINEL MARKER ─────────────────────────────────────────────────────
-
-	private static class Sentinel extends ASTNode {
-		private final String name;
-
-		Sentinel(String name) {
-			this.name = name;
-		}
-
-		@Override
-		public String getNodeLabel() {
-			return "SENTINEL:" + name;
-		}
+		currentContainer.pop();
 	}
 }
