@@ -1,6 +1,5 @@
-// Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
+// Generated from C:/Users/nilst/OneDrive/Documenten/GitHub/icss2022-sep/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
 package nl.han.ica.icss.parser;
-
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -107,4 +106,16 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAtom(ICSSParser.AtomContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#ifClause}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfClause(ICSSParser.IfClauseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#elseClause}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseClause(ICSSParser.ElseClauseContext ctx);
 }

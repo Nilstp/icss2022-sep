@@ -90,5 +90,7 @@ atom
 ifClause
     : IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE
       OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE
-      (ELSE OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE)?
+      elseClause?
     ;
+
+elseClause: ELSE OPEN_BRACE (declaration | ifClause)* CLOSE_BRACE;

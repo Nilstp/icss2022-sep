@@ -1,6 +1,5 @@
-// Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
+// Generated from C:/Users/nilst/OneDrive/Documenten/GitHub/icss2022-sep/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
 package nl.han.ica.icss.parser;
-
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -168,4 +167,24 @@ public interface ICSSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAtom(ICSSParser.AtomContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ICSSParser#ifClause}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfClause(ICSSParser.IfClauseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ICSSParser#ifClause}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfClause(ICSSParser.IfClauseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ICSSParser#elseClause}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseClause(ICSSParser.ElseClauseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ICSSParser#elseClause}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseClause(ICSSParser.ElseClauseContext ctx);
 }

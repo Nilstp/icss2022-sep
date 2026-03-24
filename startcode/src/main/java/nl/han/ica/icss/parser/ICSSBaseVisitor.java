@@ -1,6 +1,5 @@
-// Generated from C:/Users/nilst/Documents/GitHub/Compilerbouw/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
+// Generated from C:/Users/nilst/OneDrive/Documenten/GitHub/icss2022-sep/startcode/src/main/antlr4/nl/han/ica/icss/parser/ICSS.g4 by ANTLR 4.13.2
 package nl.han.ica.icss.parser;
-
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -125,4 +124,18 @@ public class ICSSBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements I
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitAtom(ICSSParser.AtomContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIfClause(ICSSParser.IfClauseContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitElseClause(ICSSParser.ElseClauseContext ctx) { return visitChildren(ctx); }
 }
