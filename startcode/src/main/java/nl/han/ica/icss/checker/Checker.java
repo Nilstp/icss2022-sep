@@ -62,9 +62,9 @@ public class Checker {
         ExpressionType expectedType = propertyTypes.get(declaration.property.name);
 
         if (expectedType == null) {
-            throw new RuntimeException("Unknown property: " + declaration.property.name);
+            declaration.setError("Unknown property: " + declaration.property.name);
         } else if (actualType != expectedType) {
-            throw new RuntimeException("Type error: expected " + expectedType + " but got " + actualType);
+            declaration.setError("Type error: expected " + expectedType + " but got " + actualType);
         }
     }
 
