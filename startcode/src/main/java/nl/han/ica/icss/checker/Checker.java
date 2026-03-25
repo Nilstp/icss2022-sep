@@ -84,13 +84,6 @@ public class Checker {
         }
 
         if (op instanceof AddOperation || op instanceof SubtractOperation) {
-
-            if((left == ExpressionType.PIXEL && right == ExpressionType.PERCENTAGE) || (left == ExpressionType.PERCENTAGE && right == ExpressionType.PIXEL)) {
-                op.setError("Cannot add/subtract pixel and percentage");
-                return ExpressionType.UNDEFINED;
-            }
-
-            //Remove since it isn't how the code should work
             if (left != right) {
                 op.setError("Operands must match");
                 return ExpressionType.UNDEFINED;
@@ -99,11 +92,6 @@ public class Checker {
         }
 
         if (op instanceof MultiplyOperation) {
-            if(left == ExpressionType.PIXEL && right == ExpressionType.PIXEL) {
-                op.setError("Cannot multiply two pixels");
-                return ExpressionType.UNDEFINED;
-            }
-
             if (left == ExpressionType.SCALAR) return right;
             if (right == ExpressionType.SCALAR) return left;
 
