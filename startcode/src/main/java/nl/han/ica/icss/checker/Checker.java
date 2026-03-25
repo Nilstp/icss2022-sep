@@ -4,6 +4,9 @@ import nl.han.ica.datastructures.HANLinkedList;
 import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.ast.types.ExpressionType;
 
 import java.util.HashMap;
@@ -54,7 +57,9 @@ public class Checker {
     }
 
     private void checkVariableAssignment(VariableAssignment assignment){
-        System.out.println("Checking variable assignment: " + assignment.name);
+        ExpressionType type = resolveExpressionType(assignment.expression);
+
+        variableTypes.getFirst().put(assignment.name.name, type);
     }
 
     private void checkDeclaration(Declaration declaration){
@@ -68,6 +73,35 @@ public class Checker {
         }
     }
 
+    private ExpressionType resolveOperation(Operation op) {
+        System.out.println("operation: " + op.lhs + " " +  op.rhs);
+        ExpressionType left = resolveExpressionType(op.lhs);
+        ExpressionType right = resolveExpressionType(op.rhs);
+
+        if (left == ExpressionType.COLOR || right == ExpressionType.COLOR) {
+            op.setError("Color not allowed in operations");
+            return ExpressionType.UNDEFINED;
+        }
+
+        if (op instanceof AddOperation || op instanceof SubtractOperation) {
+            if (left != right) {
+                op.setError("Operands must match");
+                return ExpressionType.UNDEFINED;
+            }
+            return left;
+        }
+
+        if (op instanceof MultiplyOperation) {
+            if (left == ExpressionType.SCALAR) return right;
+            if (right == ExpressionType.SCALAR) return left;
+
+            op.setError("One operand must be scalar");
+            return ExpressionType.UNDEFINED;
+        }
+
+        return ExpressionType.UNDEFINED;
+    }
+
     private void checkIfClause(IfClause ifClause){
         System.out.println("Checking if clause");
     }
@@ -78,6 +112,23 @@ public class Checker {
         if (expression instanceof PixelLiteral)      return ExpressionType.PIXEL;
         if (expression instanceof PercentageLiteral) return ExpressionType.PERCENTAGE;
         if (expression instanceof ScalarLiteral)     return ExpressionType.SCALAR;
+        if (expression instanceof Operation) {
+            return resolveOperation((Operation) expression);
+        }
+        if (expression instanceof VariableReference) {
+            String name = ((VariableReference) expression).name;
+
+            for (int i = 0; i < variableTypes.getSize(); i++) {
+                HashMap<String, ExpressionType> scope = variableTypes.get(i);
+
+                if (scope.containsKey(name)) {
+                    return scope.get(name);
+                }
+            }
+
+            expression.setError("Undefined variable: " + name);
+            return ExpressionType.UNDEFINED;
+        }
         return ExpressionType.UNDEFINED;
     }
 }
