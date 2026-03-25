@@ -11,6 +11,12 @@ import java.util.HashMap;
 public class Checker {
 
     private IHANLinkedList<HashMap<String, ExpressionType>> variableTypes;
+    private HashMap<String, ExpressionType> propertyTypes = new HashMap<>() {{
+        put("width", ExpressionType.PIXEL);
+        put("height", ExpressionType.PIXEL);
+        put("color", ExpressionType.COLOR);
+        put("background-color", ExpressionType.COLOR);
+    }};
 
     public void check(AST ast) {
         variableTypes = new HANLinkedList<>();
@@ -52,8 +58,14 @@ public class Checker {
     }
 
     private void checkDeclaration(Declaration declaration){
-        System.out.println("Checking declaration: " + declaration.property);
-        System.out.println(resolveExpressionType(declaration.expression));
+        ExpressionType actualType = resolveExpressionType(declaration.expression);
+        ExpressionType expectedType = propertyTypes.get(declaration.property.name);
+
+        if (expectedType == null) {
+            throw new RuntimeException("Unknown property: " + declaration.property.name);
+        } else if (actualType != expectedType) {
+            throw new RuntimeException("Type error: expected " + expectedType + " but got " + actualType);
+        }
     }
 
     private void checkIfClause(IfClause ifClause){
