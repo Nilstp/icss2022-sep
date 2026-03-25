@@ -14,11 +14,23 @@ import java.util.HashMap;
 public class Checker {
 
     private IHANLinkedList<HashMap<String, ExpressionType>> variableTypes;
-    private HashMap<String, ExpressionType> propertyTypes = new HashMap<>() {{
-        put("width", ExpressionType.PIXEL);
-        put("height", ExpressionType.PIXEL);
-        put("color", ExpressionType.COLOR);
-        put("background-color", ExpressionType.COLOR);
+    private HashMap<String, IHANLinkedList<ExpressionType>> propertyTypes = new HashMap<>() {{
+        put("width", new HANLinkedList<>() {{
+            addFirst(ExpressionType.PIXEL);
+            addFirst(ExpressionType.PERCENTAGE);
+            addFirst(ExpressionType.SCALAR);
+        }});
+        put("height", new HANLinkedList<>() {{
+            addFirst(ExpressionType.PIXEL);
+            addFirst(ExpressionType.PERCENTAGE);
+            addFirst(ExpressionType.SCALAR);
+        }});
+        put("color", new HANLinkedList<>() {{
+            addFirst(ExpressionType.COLOR);
+        }});
+        put("background-color", new HANLinkedList<>() {{
+            addFirst(ExpressionType.COLOR);
+        }});
     }};
 
     public void check(AST ast) {
@@ -64,17 +76,27 @@ public class Checker {
 
     private void checkDeclaration(Declaration declaration){
         ExpressionType actualType = resolveExpressionType(declaration.expression);
-        ExpressionType expectedType = propertyTypes.get(declaration.property.name);
+        IHANLinkedList<ExpressionType> expectedTypes = propertyTypes.get(declaration.property.name);
 
-        if (expectedType == null) {
+        if (expectedTypes == null) {
             declaration.setError("Unknown property: " + declaration.property.name);
-        } else if (actualType != expectedType) {
-            declaration.setError("Type error: expected " + expectedType + " but got " + actualType);
+        } else {
+            boolean match = false;
+
+            for (int i = 0; i < expectedTypes.getSize(); i++) {
+                if (expectedTypes.get(i) == actualType) {
+                    match = true;
+                    break;
+                }
+            }
+
+            if (!match) {
+                declaration.setError("Type error: got " + actualType);
+            }
         }
     }
 
     private ExpressionType resolveOperation(Operation op) {
-        System.out.println("operation: " + op.lhs + " " +  op.rhs);
         ExpressionType left = resolveExpressionType(op.lhs);
         ExpressionType right = resolveExpressionType(op.rhs);
 
@@ -103,7 +125,29 @@ public class Checker {
     }
 
     private void checkIfClause(IfClause ifClause){
-        System.out.println("Checking if clause");
+        if(resolveExpressionType(ifClause.getConditionalExpression()) != ExpressionType.BOOL){
+            ifClause.setError("Condition must be of type bool");
+        }
+
+        if(ifClause.getChildren() != null){
+            variableTypes.addFirst(new HashMap<>());
+
+            for(ASTNode node : ifClause.getChildren()){
+                checkBodyNode(node);
+            }
+
+            variableTypes.removeFirst();
+        }
+
+        if(ifClause.getElseClause() != null){
+            variableTypes.addFirst(new HashMap<>());
+
+            for(ASTNode node : ifClause.getElseClause().body){
+                checkBodyNode(node);
+            }
+
+            variableTypes.removeFirst();
+        }
     }
 
     private ExpressionType resolveExpressionType(Expression expression) {
