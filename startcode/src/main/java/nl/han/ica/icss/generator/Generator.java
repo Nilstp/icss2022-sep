@@ -21,7 +21,7 @@ public class Generator {
 
 	private void generateStylerule(Stylerule rule, StringBuilder sb, int indent) {
 		indent(sb, indent);
-		sb.append(rule.selectors.toString()).append(" {\n");
+		sb.append(rule.selectors.get(0).toString()).append(" {\n");
 
 		for (ASTNode node : rule.body) {
 			if (node instanceof Declaration) {
