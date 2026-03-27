@@ -60,6 +60,109 @@ public class Evaluator implements Transform {
                 }
             }
         }
+
+        if (expression instanceof Operation) {
+            return evaluateOperation((Operation) expression);
+        }
+        
+        return null;
+    }
+
+    private Literal evaluateOperation(Operation op) {
+        Literal left = evaluate(op.lhs);
+        Literal right = evaluate(op.rhs);
+
+        if (op instanceof AddOperation) {
+            return add(left, right);
+        }
+
+        if (op instanceof SubtractOperation) {
+            return subtract(left, right);
+        }
+
+        if (op instanceof MultiplyOperation) {
+            return multiply(left, right);
+        }
+
+        return null;
+    }
+
+    private Literal add(Literal l, Literal r) {
+        if (l instanceof PixelLiteral && r instanceof PixelLiteral) {
+            return new PixelLiteral(
+                    ((PixelLiteral) l).value + ((PixelLiteral) r).value
+            );
+        }
+
+        if (l instanceof PercentageLiteral && r instanceof PercentageLiteral) {
+            return new PercentageLiteral(
+                    ((PercentageLiteral) l).value + ((PercentageLiteral) r).value
+            );
+        }
+
+        if (l instanceof ScalarLiteral && r instanceof ScalarLiteral) {
+            return new ScalarLiteral(
+                    ((ScalarLiteral) l).value + ((ScalarLiteral) r).value
+            );
+        }
+
+        return null;
+    }
+
+    private Literal subtract(Literal l, Literal r) {
+        if (l instanceof PixelLiteral && r instanceof PixelLiteral) {
+            return new PixelLiteral(
+                    ((PixelLiteral) l).value - ((PixelLiteral) r).value
+            );
+        }
+
+        if (l instanceof PercentageLiteral && r instanceof PercentageLiteral) {
+            return new PercentageLiteral(
+                    ((PercentageLiteral) l).value - ((PercentageLiteral) r).value
+            );
+        }
+
+        if (l instanceof ScalarLiteral && r instanceof ScalarLiteral) {
+            return new ScalarLiteral(
+                    ((ScalarLiteral) l).value - ((ScalarLiteral) r).value
+            );
+        }
+
+        return null;
+    }
+
+    private Literal multiply(Literal l, Literal r) {
+
+        if (l instanceof ScalarLiteral && r instanceof PixelLiteral) {
+            return new PixelLiteral(
+                    ((ScalarLiteral) l).value * ((PixelLiteral) r).value
+            );
+        }
+
+        if (l instanceof PixelLiteral && r instanceof ScalarLiteral) {
+            return new PixelLiteral(
+                    ((PixelLiteral) l).value * ((ScalarLiteral) r).value
+            );
+        }
+
+        if (l instanceof ScalarLiteral && r instanceof PercentageLiteral) {
+            return new PercentageLiteral(
+                    ((ScalarLiteral) l).value * ((PercentageLiteral) r).value
+            );
+        }
+
+        if (l instanceof PercentageLiteral && r instanceof ScalarLiteral) {
+            return new PercentageLiteral(
+                    ((PercentageLiteral) l).value * ((ScalarLiteral) r).value
+            );
+        }
+
+        if (l instanceof ScalarLiteral && r instanceof ScalarLiteral) {
+            return new ScalarLiteral(
+                    ((ScalarLiteral) l).value * ((ScalarLiteral) r).value
+            );
+        }
+
         return null;
     }
     
