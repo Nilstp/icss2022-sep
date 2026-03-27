@@ -3,6 +3,7 @@ package nl.han.ica.icss.transforms;
 import nl.han.ica.datastructures.HANLinkedList;
 import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
+import nl.han.ica.icss.ast.literals.BoolLiteral;
 import nl.han.ica.icss.ast.literals.PercentageLiteral;
 import nl.han.ica.icss.ast.literals.PixelLiteral;
 import nl.han.ica.icss.ast.literals.ScalarLiteral;
@@ -37,7 +38,7 @@ public class Evaluator implements Transform {
                 Literal value = evaluate(var.expression);
                 variableValues.getFirst().put(var.name.name, value);
             } else if(node instanceof Stylerule){
-
+                evaluateStyleRule((Stylerule) node);
             }
         }
 
@@ -64,7 +65,7 @@ public class Evaluator implements Transform {
         if (expression instanceof Operation) {
             return evaluateOperation((Operation) expression);
         }
-        
+
         return null;
     }
 
@@ -132,7 +133,6 @@ public class Evaluator implements Transform {
     }
 
     private Literal multiply(Literal l, Literal r) {
-
         if (l instanceof ScalarLiteral && r instanceof PixelLiteral) {
             return new PixelLiteral(
                     ((ScalarLiteral) l).value * ((PixelLiteral) r).value
@@ -165,5 +165,82 @@ public class Evaluator implements Transform {
 
         return null;
     }
-    
+
+    private void evaluateStyleRule(Stylerule rule) {
+        variableValues.addFirst(new HashMap<>());
+
+        for (int i = 0; i < rule.body.size(); i++) {
+            ASTNode node = rule.body.get(i);
+
+            if (node instanceof IfClause) {
+                IfClause ifClause = (IfClause) node;
+
+                Literal condition = evaluate(ifClause.getConditionalExpression());
+
+                rule.body.remove(i);
+
+                if (condition instanceof BoolLiteral && ((BoolLiteral) condition).value) {
+                    for (int j = 0; j < ifClause.getChildren().size(); j++) {
+                        ASTNode child = ifClause.getChildren().get(j);
+                        rule.body.add(i + j, child);
+                    }
+
+                } else if (ifClause.getElseClause() != null) {
+                    for (int j = 0; j < ifClause.getElseClause().body.size(); j++) {
+                        ASTNode child = ifClause.getElseClause().body.get(j);
+                        rule.body.add(i + j, child);
+                    }
+                }
+
+                i--;
+            }
+            else {
+                evaluateBodyNode(node);
+            }
+        }
+
+        variableValues.removeFirst();
+    }
+
+    private void evaluateIfClause(IfClause ifClause) {
+        Literal condition = evaluate(ifClause.getConditionalExpression());
+
+        if (condition instanceof BoolLiteral && ((BoolLiteral) condition).value) {
+            variableValues.addFirst(new HashMap<>());
+
+            for (ASTNode node : ifClause.getChildren()) {
+                evaluateBodyNode(node);
+            }
+
+            variableValues.removeFirst();
+
+        } else if (ifClause.getElseClause() != null) {
+            variableValues.addFirst(new HashMap<>());
+
+            for (ASTNode node : ifClause.getElseClause().body) {
+                evaluateBodyNode(node);
+            }
+
+            variableValues.removeFirst();
+        }
+    }
+
+    private void evaluateBodyNode(ASTNode node) {
+        if (node instanceof VariableAssignment) {
+            VariableAssignment var = (VariableAssignment) node;
+            Literal value = evaluate(var.expression);
+            variableValues.getFirst().put(var.name.name, value);
+        }
+
+        else if (node instanceof Declaration) {
+            Declaration decl = (Declaration) node;
+            Literal value = evaluate(decl.expression);
+
+            decl.expression = value;
+        }
+
+        else if (node instanceof IfClause) {
+            evaluateIfClause((IfClause) node);
+        }
+    }
 }
