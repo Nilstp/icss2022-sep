@@ -31,13 +31,6 @@ PLUS: '+';
 MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
-LARGERTHAN: '>';
-LESSTHAN: '<';
-EQUALS: '==';
-NOTEQUALS: '!=';
-NOT: '!';
-LESSTHANOREQUALS: '<=';
-LARGERTHANOREQUALS: '>=';
 
 //--- PARSER: ---
 
@@ -55,8 +48,6 @@ declaration: prop=LOWER_IDENT COLON expression SEMICOLON;
 
 expression: expression op=MUL expression              #OperationExpression
           | expression op=(PLUS | MIN) expression     #OperationExpression
-          | expression op=(LARGERTHAN | LESSTHAN | EQUALS | NOTEQUALS | LESSTHANOREQUALS | LARGERTHANOREQUALS) expression #ComparisonExpression
-          | NOT expression                            #NotExpression
           | literal                                   #LiteralExpression
           | variable                                  #VariableExpression
           ;
