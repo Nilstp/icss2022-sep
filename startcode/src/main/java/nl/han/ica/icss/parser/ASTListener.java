@@ -3,7 +3,6 @@ package nl.han.ica.icss.parser;
 import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
-import nl.han.ica.icss.ast.comparisons.*;
 import nl.han.ica.icss.ast.literals.*;
 import nl.han.ica.icss.ast.operations.AddOperation;
 import nl.han.ica.icss.ast.operations.MultiplyOperation;
@@ -53,7 +52,8 @@ public class ASTListener extends ICSSBaseListener {
 
 	@Override
 	public void enterVariable(ICSSParser.VariableContext ctx) {
-		if (currentContainer.peek() instanceof VariableAssignment) {
+		if (currentContainer.peek() instanceof VariableAssignment ||
+				currentContainer.peek() instanceof IfClause) {
 			VariableReference variableReference = new VariableReference(ctx.getText());
 			currentContainer.peek().addChild(variableReference);
 		}
@@ -86,79 +86,6 @@ public class ASTListener extends ICSSBaseListener {
 	}
 
 	@Override
-	public void enterBoolVariableExpression(ICSSParser.BoolVariableExpressionContext ctx) {
-		VariableReference varRef = new VariableReference(ctx.variable().getText());
-		currentContainer.peek().addChild(varRef);
-	}
-
-	@Override
-	public void enterBoolLiteralExpression(ICSSParser.BoolLiteralExpressionContext ctx) {
-		BoolLiteral literal;
-
-		if (ctx.boolLiteral().TRUE() != null) {
-			literal = new BoolLiteral(true);
-		} else {
-			literal = new BoolLiteral(false);
-		}
-
-		currentContainer.peek().addChild(literal);
-	}
-
-	@Override
-	public void enterBoolLiteralValueExpression(ICSSParser.BoolLiteralValueExpressionContext ctx) {
-		Literal literal;
-		switch (ctx.literal().start.getType()) {
-			case ICSSParser.PIXELSIZE:
-				literal = new PixelLiteral(Integer.parseInt(ctx.literal().getText().replace("px", "")));
-				break;
-			case ICSSParser.PERCENTAGE:
-				literal = new PercentageLiteral(Integer.parseInt(ctx.literal().getText().replace("%", "")));
-				break;
-			case ICSSParser.SCALAR:
-				literal = new ScalarLiteral(Integer.parseInt(ctx.literal().getText()));
-				break;
-			default:
-				throw new RuntimeException("Unknown literal in bool expression: " + ctx.literal().getText());
-		}
-		currentContainer.peek().addChild(literal);
-	}
-
-	@Override
-	public void enterComparisonExpression(ICSSParser.ComparisonExpressionContext ctx){
-		Comparison comparison;
-		switch (ctx.cmp.getType()) {
-			case ICSSParser.GREATERTHAN:
-				comparison = new GreaterThanComparison();
-				break;
-			case ICSSParser.LESSTHAN:
-				comparison = new LessThanComparison();
-				break;
-			case ICSSParser.EQUALS:
-				comparison = new EqualsComparison();
-				break;
-			case ICSSParser.NOTEQUALS:
-				comparison = new NotEqualsComparison();
-				break;
-			case ICSSParser.GREATERTHANOREQUALS:
-				comparison = new GreaterThanOrEqualsComparison();
-				break;
-			case ICSSParser.LESSTHANOREQUALS:
-				comparison = new LessThanOrEqualsComparison();
-				break;
-			default:
-				throw new RuntimeException("Unknown comparator: " + ctx.cmp.getText());
-		}
-
-		currentContainer.peek().addChild(comparison);
-		currentContainer.push(comparison);
-	}
-
-	@Override
-	public void exitComparisonExpression(ICSSParser.ComparisonExpressionContext ctx) {
-		currentContainer.pop();
-	}
-
-	@Override
 	public void exitOperationExpression(ICSSParser.OperationExpressionContext ctx) {
 		currentContainer.pop();
 	}
@@ -178,6 +105,12 @@ public class ASTListener extends ICSSBaseListener {
 				break;
 			case ICSSParser.SCALAR:
 				literal = new ScalarLiteral(Integer.parseInt(ctx.getText()));
+				break;
+			case ICSSParser.TRUE:
+				literal = new BoolLiteral(true);
+				break;
+			case ICSSParser.FALSE:
+				literal = new BoolLiteral(false);
 				break;
 			default:
 				throw new RuntimeException("Unknown literal: " + ctx.getText());
