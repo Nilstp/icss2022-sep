@@ -64,7 +64,6 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/generated-sources/antlr4</outputDirectory>
-							<packageName>nl.han.ica.icss.parser</packageName>
 							<visitor>true</visitor> <!-- optional, if you want BaseVisitor -->
 						</configuration>
 					</execution>
