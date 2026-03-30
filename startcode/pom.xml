@@ -54,19 +54,13 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.13.2</version>
+				<version>4.8</version>
 				<executions>
 					<execution>
-						<id>generate-antlr</id>
-						<phase>generate-sources</phase>
+						<id>antlr</id>
 						<goals>
 							<goal>antlr4</goal>
 						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/generated-sources/antlr4</outputDirectory>
-							<packageName>nl.han.ica.icss.parser</packageName>
-							<visitor>true</visitor> <!-- optional, if you want BaseVisitor -->
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

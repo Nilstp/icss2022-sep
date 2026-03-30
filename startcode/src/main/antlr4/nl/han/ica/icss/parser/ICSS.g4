@@ -31,13 +31,6 @@ PLUS: '+';
 MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
-GREATERTHAN: '>';
-LESSTHAN: '<';
-EQUALS: '==';
-NOTEQUALS: '!=';
-NOT: '!';
-LESSTHANOREQUALS: '<=';
-GREATERTHANOREQUALS: '>=';
 
 //--- PARSER: ---
 
@@ -56,19 +49,10 @@ declaration: prop=LOWER_IDENT COLON expression SEMICOLON;
 expression: expression op=MUL expression              #OperationExpression
           | expression op=(PLUS | MIN) expression     #OperationExpression
           | literal                                   #LiteralExpression
-          | boolExpression                            #BoolExpressionExpression
           | variable                                  #VariableExpression
           ;
 
-boolExpression
-    : boolExpression cmp=(GREATERTHAN | LESSTHAN | EQUALS | NOTEQUALS | LESSTHANOREQUALS | GREATERTHANOREQUALS) boolExpression #ComparisonExpression
-    | NOT boolExpression                                       #NotExpression
-    | variable                                                 #BoolVariableExpression
-    | boolLiteral                                              #BoolLiteralExpression
-    | literal                                                  #BoolLiteralValueExpression
-    ;
-
-ifClause: IF BOX_BRACKET_OPEN boolExpression BOX_BRACKET_CLOSE
+ifClause: IF BOX_BRACKET_OPEN variable BOX_BRACKET_CLOSE
           OPEN_BRACE body CLOSE_BRACE
           elseClause?;
 
@@ -76,5 +60,4 @@ elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
 
 variable: CAPITAL_IDENT;
 
-literal: COLOR | PIXELSIZE | PERCENTAGE | SCALAR;
-boolLiteral: TRUE | FALSE;
+literal: COLOR | PIXELSIZE | PERCENTAGE | SCALAR | TRUE | FALSE;
