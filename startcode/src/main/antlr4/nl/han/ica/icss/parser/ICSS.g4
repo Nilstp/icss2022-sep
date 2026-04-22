@@ -40,7 +40,7 @@ assignment: variable ASSIGNMENT_OPERATOR expression SEMICOLON;
 
 stylerule: selector OPEN_BRACE body CLOSE_BRACE;
 
-body: (declaration | ifClause)*;
+body: (assignment | declaration | ifClause)*;
 
 selector: ID_IDENT | CLASS_IDENT | LOWER_IDENT;
 
