@@ -58,6 +58,8 @@ ifClause: IF BOX_BRACKET_OPEN variable BOX_BRACKET_CLOSE
 
 elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
 
-variable: CAPITAL_IDENT;
+variable: CAPITAL_IDENT | booleanLiteral;
 
-literal: COLOR | PIXELSIZE | PERCENTAGE | SCALAR | TRUE | FALSE;
+literal: COLOR | PIXELSIZE | PERCENTAGE | SCALAR | booleanLiteral;
+
+booleanLiteral: TRUE | FALSE;

@@ -12,6 +12,7 @@ public class BoolLiteral extends Literal {
     public BoolLiteral(String text) {
         this.value = text.equals("TRUE");
     }
+
     @Override
     public String getNodeLabel() {
         String textValue = value ? "TRUE" : "FALSE";

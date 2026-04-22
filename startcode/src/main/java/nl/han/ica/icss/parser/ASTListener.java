@@ -52,11 +52,19 @@ public class ASTListener extends ICSSBaseListener {
 
 	@Override
 	public void enterVariable(ICSSParser.VariableContext ctx) {
+		if (ctx.CAPITAL_IDENT() == null) return;
+
 		if (currentContainer.peek() instanceof VariableAssignment ||
 				currentContainer.peek() instanceof IfClause) {
 			VariableReference variableReference = new VariableReference(ctx.getText());
 			currentContainer.peek().addChild(variableReference);
 		}
+	}
+
+	@Override
+	public void enterBooleanLiteral(ICSSParser.BooleanLiteralContext ctx) {
+		BoolLiteral literal = new BoolLiteral(ctx.TRUE() != null);
+		currentContainer.peek().addChild(literal);
 	}
 
 	@Override
@@ -107,11 +115,8 @@ public class ASTListener extends ICSSBaseListener {
 				literal = new ScalarLiteral(Integer.parseInt(ctx.getText()));
 				break;
 			case ICSSParser.TRUE:
-				literal = new BoolLiteral(true);
-				break;
 			case ICSSParser.FALSE:
-				literal = new BoolLiteral(false);
-				break;
+				return;
 			default:
 				throw new RuntimeException("Unknown literal: " + ctx.getText());
 		}
